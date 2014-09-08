@@ -32,7 +32,7 @@ def should_run(pid_dir, rule):
             if os.path.exists(os.path.join(pid_dir, "%s.next_retry" % rule.name)):
                 next_retry = Datefile(pid_dir, "%s.next_retry" % rule.name)
                 now = datetime.utcnow()
-                if now > next_retry:
+                if now > datetime.strptime(str(next_retry), '%Y-%m-%d %H:%M:%S'):
                     return True
     log.debug('Skipping job: %s (last: %s)', rule.name, last_run)
     return False
