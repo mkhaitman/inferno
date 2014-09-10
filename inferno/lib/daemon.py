@@ -52,13 +52,13 @@ def run_rule_async(rule_name, settings):
     except Exception as e:
         log.error('%s: %s', rule_name, e)
         if rule.retry:
-            if rule.retry_limit > pid.get_retry_count(pid_dir, rule):
+            if rule.retry_limit >= pid.get_retry_count(pid_dir, rule):
                 log.error('%s: will be retried in %s hour(s)', rule_name, rule.retry_delay)
                 pid.create_next_retry(pid_dir, rule)
+                pid.increment_retry_count(pid_dir, rule)
             else:
                 log.error('%s: failed max retry limit (%s)', rule_name, rule.retry_limit)
                 pid.create_failed(pid_dir, rule)
-            pid.increment_retry_count(pid_dir, rule)
     else:
         if rule.retry:
             # Failed before, however, ran successfully this time. Clean up fail/retry files

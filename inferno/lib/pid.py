@@ -44,6 +44,9 @@ def create_last_run(pid_dir, rule):
 
 def create_failed(pid_dir, rule):
     Datefile(pid_dir, "%s.failed" % rule.name, timestamp=datetime.utcnow())
+    next_retry = os.path.join(pid_dir, "%s.next_retry" % rule.name)
+    if os.path.exists(next_retry):
+        os.unlink(next_retry)
 
 
 def create_next_retry(pid_dir, rule):
@@ -57,7 +60,7 @@ def increment_retry_count(pid_dir, rule):
     path = os.path.join(pid_dir, "%s.retry_count" % rule.name)
     if os.path.exists(path):
         with open(path) as r:
-            retry_count = int(r.readline) + 1
+            retry_count = int(r.readlines(1)[0]) + 1
         with open(path, 'w') as w:
             w.write(str(retry_count))
     else:
@@ -69,7 +72,7 @@ def get_retry_count(pid_dir, rule):
     path = os.path.join(pid_dir, "%s.retry_count" % rule.name)
     if os.path.exists(path):
         with open(path) as r:
-            return int(r.readline)
+            return int(r.readlines(1)[0])
     else:
         return 0
 
