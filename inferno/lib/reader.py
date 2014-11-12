@@ -31,7 +31,11 @@ def csv_reader(stream, size=None, url=None, params=None):
     fieldnames = getattr(params, 'csv_fields', None)
     dialect = getattr(params, 'csv_dialect', 'excel')
 
-    reader = csv.reader(stream, dialect=dialect)
+    if dialect not in csv.list_dialects():
+        reader = csv.reader(stream, delimiter=params.delimiter)
+    else:
+        reader = csv.reader(stream, dialect=dialect)
+
     done = False
     while not done:
         try:
